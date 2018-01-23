@@ -13,14 +13,11 @@ kernel.iso: kernel.bin grub.cfg
 	cp grub.cfg build/boot/grub/grub.cfg
 	grub-mkrescue -o kernel.iso build/ 2> /dev/null
 
-kernel.bin: multiboot.o ipl.o
-	ld -n -o kernel.bin -T linker.ld multiboot.o ipl.o
+kernel.bin: multiboot.o ipl.o longmode.o
+	ld -n -o kernel.bin -T linker.ld multiboot.o ipl.o longmode.o
 
-multiboot.o: multiboot.asm
-	nasm -f elf64 multiboot.asm
-
-ipl.o: ipl.asm
-	nasm -f elf64 ipl.asm
+%.o: %.asm
+	nasm -f elf64 $< -o $@
 
 clean:
 	rm *.bin *.o *.iso

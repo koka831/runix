@@ -8,10 +8,10 @@ run: kernel.iso
 	@qemu-system-x86_64 -cdrom kernel.iso
 
 kernel.iso: kernel.bin grub.cfg
-	mkdir -p build/grub
-	cp kernel.bin build/kernel.bin
-	cp grub.cfg build/grub/grub.cfg
-	grub-mkrescue -o kernel.iso build 2> /dev/null
+	mkdir -p build/boot/grub
+	cp kernel.bin build/boot/kernel.bin
+	cp grub.cfg build/boot/grub/grub.cfg
+	grub-mkrescue -o kernel.iso build/ 2> /dev/null
 
 kernel.bin: multiboot.o ipl.o
 	ld -n -o kernel.bin -T linker.ld multiboot.o ipl.o

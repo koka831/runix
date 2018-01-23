@@ -4,16 +4,7 @@ section .text
 bits 32
 
 start:
-    MOV esp, stack_top
-    ; print 'OK' to screen
     MOV DWORD [0xb8000], 0x2f4b2f4f
-chekck_boot:
-    cmp EAX, 0x36d76289
-    JNE .no_multiboot
-    RET
-.no_multiboot:
-    MOV al, "0"
-    jmp error
 
 error:
     MOV DWORD [0xb8000], 0x4f524f45

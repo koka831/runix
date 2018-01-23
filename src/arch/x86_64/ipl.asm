@@ -1,4 +1,5 @@
 global start
+extern long_mode
 
 section .text
 bits 32
@@ -13,7 +14,9 @@ start:
     call init_page_table
     call init_paging
 
-    lgdt [gdt64.pointer]
+    lgdt [gdt64.pointer]    ; load 64bit GDT
+
+    jmp gdt64.code:long_mode
 
     mov dword [0xb8000], 0x2f4b2f4f
     hlt

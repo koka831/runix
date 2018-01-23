@@ -13,6 +13,8 @@ start:
     call init_page_table
     call init_paging
 
+    lgdt [gdt64.pointer]
+
     mov dword [0xb8000], 0x2f4b2f4f
     hlt
 
@@ -128,3 +130,24 @@ p1_table:
 stack_bottom:
     resb    64
 stack_top:
+
+section .rodata
+;; Global Descriptor Table
+;; Bits   \   Name        \ Meaning
+;; 0 - 41 | ignored        | ignored in 64bit mode
+;;  42    | conforming     | the current privilege level
+;;  43    | executable     | if(true) code segment else data segment
+;;  44    | decriptor type | 1: code/data segments
+;; 45 - 46| privilege      | the ring level; 0: kernel 3: user
+;;  47    | present        | 1: valid selector
+;; 48 - 52| ignored
+;;  53    | 64 bit         | 0: 32bit, 1: 64bit code segments
+;;  54    | 32 bit         | 1: 32bit, 0: 64bit
+;; 55 - 63| ignored
+gdt64:
+    dq 0
+.code: equ $ - gdt64
+    dq (1<<43) | (1<<44) | (1<<47) | (1<<53)
+.pointer:
+    dw $ - gdt64 - 1
+    dq gdt64

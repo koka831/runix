@@ -1,6 +1,9 @@
 [package]
+authors = ["koka <koka.code@gmail.com>"]
 name = "runix"
 version = "0.1.0"
-authors = ["koka <koka.code@gmail.com>"]
-
 [dependencies]
+rlibc = "1.0.0"
+
+[lib]
+crate-type = ["staticlib"]

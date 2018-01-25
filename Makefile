@@ -28,7 +28,7 @@ $(iso): $(kernel) $(grub_cfg)
 	@grub-mkrescue -o $(iso) build/iso/ 2> /dev/null
 
 $(kernel): kernel $(runix) $(asm_obj) $(linker_ld)
-	@ld -n -T $(linker_ld) -o $(kernel) $(asm_obj) $(runix)
+	@ld -n --gc-sections -T $(linker_ld) -o $(kernel) $(asm_obj) $(runix)
 
 kernel:
 	@RUST_TARGET_PATH="$(shell pwd)" xargo build --target $(target)

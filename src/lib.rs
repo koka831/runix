@@ -1,7 +1,12 @@
 #![feature(lang_items)]
+#![feature(const_fn)]
+#![feature(ptr_internals)]
 #![no_std]
 
 extern crate rlibc;
+
+mod vga;
+
 #[no_mangle]
 pub extern fn boot() {
     let hello = b"Hello, World";

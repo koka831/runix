@@ -12,6 +12,7 @@ long_mode:
     mov fs, ax
     mov gs, ax
 
+    ;; call Rust object
     extern boot
     call boot
 

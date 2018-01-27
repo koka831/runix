@@ -5,9 +5,22 @@ use core::ptr::Unique;
 /// TODO: support 16bit color
 #[repr(u8)] 
 pub enum Color {
-    Black   = 0,
-    Blue    = 1,
-    Green   = 2,
+    Black       = 0x0,
+    Blue        = 0x1,
+    Green       = 0x2,
+    Cyan        = 0x3,
+    Red         = 0x4,
+    Magenta     = 0x5,
+    Brown       = 0x6,
+    LightGray   = 0x7,
+    DarkGray    = 0x8,
+    LigtBlue    = 0x9,
+    LightGreen  = 0xa,
+    LightCyan   = 0xb,
+    LightRed    = 0xc,
+    Pink        = 0xd,
+    Yellow      = 0xe,
+    White       = 0xf,
 }
 
 #[derive(Clone, Copy)]
@@ -16,6 +29,10 @@ pub struct ColorCode(u8);
 impl ColorCode {
     pub const fn new(fg: Color, bg: Color) -> ColorCode {
         ColorCode((bg as u8) << 4 | (fg as u8))
+    }
+
+    pub const fn new_u8(fg: u8, bg: u8) -> ColorCode {
+        ColorCode((bg) << 4 | fg)
     }
 }
 
@@ -84,4 +101,19 @@ pub fn test_print_console() {
     };
 
     writer.write_str("Hello, World!");
+}
+
+pub fn test_print_color() {
+    let mut cnt = 0;
+    for j in 0x00..0x0f {
+        for k in 0x00..0x0f {
+            let mut writer = ConsoleWriter {
+                col_pos: cnt,
+                color: ColorCode::new_u8(j, k),
+                buf: unsafe { Unique::new_unchecked(0xb8000 as *mut _) },
+            };
+            writer.write_str("  ");
+            cnt += 1;
+        }
+    }
 }

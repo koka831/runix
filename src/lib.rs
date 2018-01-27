@@ -20,6 +20,7 @@ pub extern fn boot() {
     unsafe { *buf_ptr = hello_clr };
 
     vga::test_print_console();
+    vga::test_print_color();
     loop {}
 }
 

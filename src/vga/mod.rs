@@ -2,7 +2,7 @@ use core::ptr::Unique;
 
 #[allow(dead_code)]
 
-/// TODO: support 16bit color
+
 #[repr(u8)] 
 pub enum Color {
     Black       = 0x0,

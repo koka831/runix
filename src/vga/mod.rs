@@ -49,7 +49,8 @@ pub type Buffer = [[Char; TERM_WIDTH]; TERM_HEIGHT];
 
 #[allow(dead_code)]
 pub struct ConsoleWriter {
-    col_pos: usize,
+    x: usize,
+    y: usize,
     color: ColorCode,
     buf: Unique<Buffer>,
 }
@@ -59,61 +60,78 @@ impl ConsoleWriter {
     // parse bytecodes and output to buf
     fn write_byte(&mut self, byte: u8) {
         match byte {
-            b'\n' => self.new_line(),
+            b'\n' => { self.y += 1; }
             byte => {
-                if self.col_pos >= TERM_WIDTH {
-                    self.new_line();
+                if self.x >= TERM_WIDTH {
+                    self.y += 1;
                 }
 
-                let row = TERM_HEIGHT - 1;
-                let col = self.col_pos;
+                let row = self.y;
+                let col = self.x;
                 let color = self.color;
 
                 self.buffer()[row][col] = Char {
                     ascii: byte,
                     color: color,
                 };
-                self.col_pos += 1;
+                self.x += 1;
             }
         }
     }
-
+/*
     pub fn write_str(&mut self, s: &str) {
         for b in s.bytes() {
             self.write_byte(b)
         }
     }
-
+*/
     fn buffer(&mut self) -> &mut Buffer {
         unsafe { self.buf.as_mut() }
     }
 
-    fn new_line(&mut self) {}
+}
+
+/// for write! / writeln! macros
+use core::fmt::Write;
+use core::fmt;
+impl Write for ConsoleWriter {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        for b in s.bytes() {
+            self.write_byte(b)
+        }
+        Ok(())
+    }
 }
 
 /// TODO: check how to test codes with side effect just like I/O
 #[allow(dead_code)]
 pub fn test_print_console() {
-    let mut writer = ConsoleWriter {
-        col_pos: 1,
+    let writer = ConsoleWriter {
+        x: 1,
+        y: 1,
         color: ColorCode::new(Color::Blue, Color::Green),
         buf: unsafe { Unique::new_unchecked(0xb8000 as *mut _) },
     };
 
-    writer.write_str("Hello, World!");
+    //writer.write_str("Hello, World!");
 }
 
 pub fn test_print_color() {
-    let mut cnt = 0;
-    for j in 0x00..0x0f {
-        for k in 0x00..0x0f {
+    let mut row;
+    let mut col = 15;
+    for j in 0..8 {
+        row = 0;
+        for k in 0..8 {
             let mut writer = ConsoleWriter {
-                col_pos: cnt,
+                x: row,
+                y: col,
                 color: ColorCode::new_u8(j, k),
                 buf: unsafe { Unique::new_unchecked(0xb8000 as *mut _) },
             };
-            writer.write_str("  ");
-            cnt += 1;
+            // TODO#fix: writer shoult manage buffer position
+            write!(writer, "fg:{},bg:{}", j, k).unwrap();
+            row += "fg:i,bg:j".len();
         }
+        col += 1;
     }
 }

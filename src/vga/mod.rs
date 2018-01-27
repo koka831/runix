@@ -61,6 +61,12 @@ impl ConsoleWriter {
         }
     }
 
+    pub fn write_str(&mut self, s: &str) {
+        for b in s.bytes() {
+            self.write_byte(b)
+        }
+    }
+
     fn buffer(&mut self) -> &mut Buffer {
         unsafe { self.buf.as_mut() }
     }
@@ -72,10 +78,10 @@ impl ConsoleWriter {
 #[allow(dead_code)]
 pub fn test_print_console() {
     let mut writer = ConsoleWriter {
-        col_pos: 0,
+        col_pos: 1,
         color: ColorCode::new(Color::Blue, Color::Green),
         buf: unsafe { Unique::new_unchecked(0xb8000 as *mut _) },
     };
 
-    writer.write_byte(b'H');
+    writer.write_str("Hello, World!");
 }

@@ -19,6 +19,7 @@ pub extern fn boot() {
     let buf_ptr = (0xb8000 + 1988) as *mut _;
     unsafe { *buf_ptr = hello_clr };
 
+    //vga::test_print_console();
     loop {}
 }
 

@@ -2,13 +2,15 @@ use core::ptr::Unique;
 
 #[allow(dead_code)]
 
-#[repr(u8)]
+/// TODO: support 16bit color
+#[repr(u8)] 
 pub enum Color {
     Black   = 0,
     Blue    = 1,
     Green   = 2,
 }
 
+#[derive(Clone, Copy)]
 pub struct ColorCode(u8);
 
 impl ColorCode {
@@ -35,4 +37,45 @@ pub struct ConsoleWriter {
     buf: Unique<Buffer>,
 }
 
-impl ConsoleWriter
+impl ConsoleWriter {
+
+    // parse bytecodes and output to buf
+    fn write_byte(&mut self, byte: u8) {
+        match byte {
+            b'\n' => self.new_line(),
+            byte => {
+                if self.col_pos >= TERM_WIDTH {
+                    self.new_line();
+                }
+
+                let row = TERM_HEIGHT - 1;
+                let col = self.col_pos;
+                let color = self.color;
+
+                self.buffer()[row][col] = Char {
+                    ascii: byte,
+                    color: color,
+                };
+                self.col_pos += 1;
+            }
+        }
+    }
+
+    fn buffer(&mut self) -> &mut Buffer {
+        unsafe { self.buf.as_mut() }
+    }
+
+    fn new_line(&mut self) {}
+}
+
+/// TODO: check how to test codes with side effect just like I/O
+#[allow(dead_code)]
+pub fn test_print_console() {
+    let mut writer = ConsoleWriter {
+        col_pos: 0,
+        color: ColorCode::new(Color::Blue, Color::Green),
+        buf: unsafe { Unique::new_unchecked(0xb8000 as *mut _) },
+    };
+
+    writer.write_byte(b'H');
+}

@@ -116,6 +116,8 @@ pub fn test_print_console() {
     //writer.write_str("Hello, World!");
 }
 
+/// TODO: need way somehow to run testcases on vm like qemu
+#[allow(dead_code)]
 pub fn test_print_color() {
     let mut row;
     let mut col = 15;

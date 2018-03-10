@@ -131,7 +131,7 @@ p1_table:
     resb 4096   ;; Page Table / PT
 
 stack_bottom:
-    resb    64
+    resb    4096 * 4    ;; up to 16KiB
 stack_top:
 
 section .rodata
